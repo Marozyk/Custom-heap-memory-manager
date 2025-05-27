@@ -36,12 +36,12 @@ This repository implements a **custom dynamic memory allocator** in C, providing
 
    * Allocate and zero-initialize an array of `num × size` bytes.
 
-4. \**heap\_realloc(void *ptr, size\_t new\_size)**
+4. **heap\_realloc(void *ptr, size\_t new\_size)**
 
    * Resize an existing block, preserving content up to the smaller of old/new sizes.
    * Expands in-place when possible or moves to a new block if necessary.
 
-5. \**heap\_free(void *ptr)**
+5. **heap\_free(void *ptr)**
 
    * Marks a block as free and coalesces with adjacent free blocks.
 
@@ -57,7 +57,7 @@ This repository implements a **custom dynamic memory allocator** in C, providing
 
    * Returns the size of the largest allocated (non-free) block.
 
-8. \**get\_pointer\_type(const void *ptr)**
+8. **get\_pointer\_type(const void *ptr)**
 
    * Identifies pointer types (valid data, inside fences, control block, unallocated, or corrupted).
 
