@@ -22,44 +22,43 @@ This repository implements a **custom dynamic memory allocator** in C, providing
 
 ## ⚙️ Features
 
-1. **heap\_setup / heap\_clean**
+### `heap_setup()` / `heap_clean()`
+- Initializes the custom heap using `sbrk(0)` and resets its internal state.
+- `heap_clean()` releases all allocated memory and clears internal bookkeeping.
 
-   * Initialize (`sbrk(0)`) and reset the custom heap.
+### `heap_malloc(size_t size)`
+- Allocates a memory block of `size` bytes.
+- Inserts **fence bytes** (canaries) before and after the data region.
+- Computes and stores a **checksum** (`control_size`) in the block header to detect corruption.
 
-2. **heap\_malloc(size\_t size)**
+### `heap_calloc(size_t num, size_t size)`
+- Allocates memory for an array of `num × size` bytes.
+- Zero-initializes the entire block.
 
-   * Allocate a block of memory with `size` bytes.
-   * Places `FENCE` bytes before and after the data region.
-   * Records a checksum of the header to detect corruption.
+### `heap_realloc(void *ptr, size_t new_size)`
+- Resizes an existing memory block, preserving content up to the smaller of old and new sizes.
+- Expands in place if possible; otherwise, allocates a new block, copies data, and frees the old block.
 
-3. **heap\_calloc(size\_t num, size\_t size)**
+### `heap_free(void *ptr)`
+- Frees a previously allocated block.
+- Coalesces adjacent free blocks to reduce fragmentation.
 
-   * Allocate and zero-initialize an array of `num × size` bytes.
+### `heap_validate(void)`
+- Scans all heap blocks and verifies:
+  - Header checksums (`control_size`).
+  - Integrity of fence bytes.
+- Returns specific error codes for various corruption scenarios (e.g., fence breach, checksum mismatch).
 
-4. **heap\_realloc(void *ptr, size\_t new\_size)**
+### `heap_get_largest_used_block_size(void)`
+- Returns the size (in bytes) of the largest currently allocated (non-free) block.
 
-   * Resize an existing block, preserving content up to the smaller of old/new sizes.
-   * Expands in-place when possible or moves to a new block if necessary.
-
-5. **heap\_free(void *ptr)**
-
-   * Marks a block as free and coalesces with adjacent free blocks.
-
-6. **heap\_validate(void)**
-
-   * Verifies the integrity of all blocks by checking:
-
-     * Header checksum (`control_size`).
-     * Fence bytes sequence.
-   * Returns error codes indicating various corruption scenarios.
-
-7. **heap\_get\_largest\_used\_block\_size(void)**
-
-   * Returns the size of the largest allocated (non-free) block.
-
-8. **get\_pointer\_type(const void *ptr)**
-
-   * Identifies pointer types (valid data, inside fences, control block, unallocated, or corrupted).
+### `get_pointer_type(const void *ptr)`
+- Classifies the pointer’s status:
+  - Valid data pointer
+  - Inside fence area
+  - Inside block metadata
+  - Unallocated region
+  - Corrupted or invalid pointer
 
 ---
 
